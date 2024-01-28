@@ -26,19 +26,40 @@ def background_runner(log_queue, script_filepath, password):
 def run_script_and_capture_output(filename, password, user_dir):
     global script_processes
 
+    # Terminate existing script process if it's running
     if filename in script_processes:
-        process, _ = script_processes[filename]
+        process, queue, background_task = script_processes[filename]
         if process.is_alive():
-            process.terminate()  # Terminate the existing process
+            process.kill()  # kill the existing process
+            process.join()  # Wait for the process to terminate
+            queue.close()  # Close the queue
+            # Optionally: Handle background_task termination if necessary
 
     process_queue = Queue()
     script_path = os.path.join(user_dir, filename)
+
+    # Start the script in a new process
     process = Process(
         target=background_runner,
         args=(process_queue, script_path, password),
     )
     process.start()
-    script_processes[filename] = (process, process_queue)
+
+    # Function to handle the queue messages
+    def handle_queue_messages():
+        while True:
+            try:
+                message = process_queue.get(timeout=1)
+                if message["type"] == "log":
+                    socketio.emit("log_message", {"data": message["data"]})
+            except Exception as e:
+                # Handle exceptions (e.g., queue closed)
+                pass
+
+    # Start the background task for handling queue messages
+    background_task = socketio.start_background_task(handle_queue_messages)
+    # Store the process, its queue, and background task in the global dictionary
+    script_processes[filename] = (process, process_queue, background_task)
 
 
 class WriteToQueue:
@@ -60,9 +81,10 @@ class WriteToQueue:
         sys.stdout = temp_stdout
 
     def write(self, log):
+        socketio.emit("log_message", {"data": log, "type": "log"})
         self.write_to_log_file(log)
         self.print_to_main_process(log)
-        self.queue.put(log)
+        self.queue.put({"data": log, "type": "log"})
 
     def flush(self):
         pass
