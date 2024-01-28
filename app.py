@@ -26,7 +26,6 @@ def add_password_hash(password_hash):
 def is_correct_password(password):
     password_hashes = get_stored_password_hashes()
     password_hash = encryption_helper.hash_password(password)
-    print("password_hash, password", password_hash, password)
 
     if password_hash in password_hashes:
         return True
@@ -49,8 +48,6 @@ def login():
         password = request.form["password"]
         if is_correct_password(password):
             session["user_password"] = password
-            print("""session["user_password"]""", session["user_password"])
-
             return redirect(url_for("list_files"))
         else:
             flash("Login failed. Please try again.")
@@ -61,11 +58,8 @@ def login():
 def list_files():
     if "user_password" not in session:
         return redirect(url_for("login"))
-    print("""session["user_password"]""", session["user_password"])
-
     password = session["user_password"]
     password_hash = encryption_helper.hash_password(password)
-    print("password_hash", password_hash)
     user_dir = os.path.join(runners_dir_path, password_hash)
 
     files = os.listdir(user_dir)
@@ -112,7 +106,6 @@ def edit_file(filename):
 
     password = session["user_password"]
     filename = encryption_helper.encrypt_filename(filename, password)
-    print("filename", filename)
     password_hash = encryption_helper.hash_password(password)
     user_dir = os.path.join(runners_dir_path, password_hash)
     file_path = os.path.join(user_dir, filename)
