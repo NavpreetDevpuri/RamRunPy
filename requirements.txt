@@ -3,3 +3,4 @@ cryptography
 bcrypt
 flask-socketio
 eventlet
+supervisor
