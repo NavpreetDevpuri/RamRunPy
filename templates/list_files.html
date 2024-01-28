@@ -1,0 +1,44 @@
+<!-- templates/list_files.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>List of Files - RamRunPy</title>
+    <style>
+      .file-actions {
+        display: inline-block;
+        margin-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>List of Files</h2>
+    <ul>
+      {% for file in files %}
+      <li>
+        {{ file }}
+        <div class="file-actions">
+          <!-- Edit and Delete buttons -->
+          <a href="{{ url_for('edit_file', filename=file) }}">Edit</a>
+          <form
+            action="{{ url_for('delete_file', filename=file) }}"
+            method="post"
+            style="display: inline"
+          >
+            <button type="submit">Delete</button>
+          </form>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <!-- Button to add a new file -->
+    <a href="{{ url_for('add_file') }}">
+      <button>Add New File</button>
+    </a>
+
+    <br /><br />
+    <a href="{{ url_for('logout') }}">Logout</a>
+  </body>
+</html>

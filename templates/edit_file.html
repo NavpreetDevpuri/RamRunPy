@@ -1,0 +1,21 @@
+<!-- templates/edit_file.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Edit File - RamRunPy</title>
+  </head>
+  <body>
+    <h2>Edit File: {{ filename }}</h2>
+    <form action="{{ url_for('edit_file', filename=filename) }}" method="post">
+      <textarea id="content" name="content" rows="10" cols="50" required>
+{{ content }}</textarea
+      ><br /><br />
+
+      <input type="submit" value="Save Changes" />
+    </form>
+
+    <a href="{{ url_for('list_files') }}">Back to Files List</a>
+  </body>
+</html>

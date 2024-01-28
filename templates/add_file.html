@@ -1,0 +1,30 @@
+<!-- templates/add_file.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Add New File - RamRunPy</title>
+  </head>
+  <body>
+    <h2>Add New File</h2>
+    <form action="{{ url_for('add_file') }}" method="post">
+      <label for="filename">Filename:</label>
+      <input type="text" id="filename" name="filename" required /><br /><br />
+
+      <label for="content">Content:</label><br />
+      <textarea
+        id="content"
+        name="content"
+        rows="10"
+        cols="50"
+        required
+      ></textarea
+      ><br /><br />
+
+      <input type="submit" value="Add File" />
+    </form>
+
+    <a href="{{ url_for('list_files') }}">Back to Files List</a>
+  </body>
+</html>
