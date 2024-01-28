@@ -2,3 +2,4 @@ flask
 cryptography
 bcrypt
 flask-socketio
+eventlet

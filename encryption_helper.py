@@ -33,7 +33,6 @@ def derive_key(password: str, salt: bytes) -> bytes:
         backend=default_backend(),
     )
     derive_key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
-    print("derive_key", derive_key)
     return derive_key
 
 
@@ -81,7 +80,7 @@ def encrypt_string(string: str, password: str, salt: bytes = None) -> str:
 def decrypt_string(string: str, password: str) -> str:
     decoded_bytes = base64.b64decode(string.encode())
     dencrypted_bytes = decrypt_bytes(decoded_bytes, password)
-    return dencrypted_bytes
+    return dencrypted_bytes.decode("utf-8")
 
 
 def save_hashed_password(hashed_password: bytes, file_path: str):
