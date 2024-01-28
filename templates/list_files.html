@@ -5,12 +5,37 @@
   <head>
     <meta charset="UTF-8" />
     <title>List of Files - RamRunPy</title>
-    <style>
-      .file-actions {
-        display: inline-block;
-        margin-left: 20px;
+    <script
+      src="https://cdn.socket.io/4.7.4/socket.io.min.js"
+      integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4"
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="text/javascript">
+      var socket = io.connect(
+        'http://' + document.domain + ':' + location.port
+      );
+
+      socket.on('connect', function () {
+        console.log('Websocket connected!');
+      });
+
+      socket.on('log_message', function (msg) {
+        console.log(msg);
+        document.getElementById('logs').textContent += msg.data;
+      });
+
+      function fetchLogs(filename) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            document.getElementById('logs').textContent = this.responseText;
+          }
+        };
+        xhr.open('GET', '/get_logs/' + filename, true);
+        xhr.send();
       }
-    </style>
+    </script>
   </head>
   <body>
     <h2>List of Files</h2>
@@ -18,27 +43,40 @@
       {% for file in files %}
       <li>
         {{ file }}
-        <div class="file-actions">
-          <!-- Edit and Delete buttons -->
-          <a href="{{ url_for('edit_file', filename=file) }}">Edit</a>
-          <form
-            action="{{ url_for('delete_file', filename=file) }}"
-            method="post"
-            style="display: inline"
-          >
-            <button type="submit">Delete</button>
-          </form>
-        </div>
+        <button
+          onclick="location.href='{{ url_for('edit_file', filename=file) }}'"
+        >
+          Edit
+        </button>
+        <form
+          action="{{ url_for('delete_file', filename=file) }}"
+          method="post"
+          style="display: inline"
+        >
+          <button type="submit">Delete</button>
+        </form>
+        <!-- Add Start and Stop buttons in list_files.html -->
+        <button
+          onclick="location.href='{{ url_for('start_script', filename=file) }}'"
+        >
+          Start
+        </button>
+        <button
+          onclick="location.href='{{ url_for('stop_script', filename=file) }}'"
+        >
+          Stop
+        </button>
+        <button onclick="fetchLogs('{{ file }}')">Fetch Logs</button>
       </li>
       {% endfor %}
     </ul>
-
-    <!-- Button to add a new file -->
-    <a href="{{ url_for('add_file') }}">
-      <button>Add New File</button>
-    </a>
-
-    <br /><br />
+    <button onclick="location.href='{{ url_for('add_file') }}'">
+      Add New File
+    </button>
+    <div
+      id="logs"
+      style="margin-top: 20px; border: 1px solid #ccc; padding: 10px"
+    ></div>
     <a href="{{ url_for('logout') }}">Logout</a>
   </body>
 </html>
