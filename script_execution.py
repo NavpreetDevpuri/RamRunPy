@@ -25,16 +25,14 @@ def background_runner(log_queue, script_filepath, password):
 
 def run_script_and_capture_output(filename, password, user_dir):
     global script_processes
-
+    process_queue = None
     # Terminate existing script process if it's running
     if filename in script_processes:
         process, queue, background_task = script_processes[filename]
         if process.is_alive():
             process.kill()  # kill the existing process
-            process.join()  # Wait for the process to terminate
-            queue.close()  # Close the queue
+            queue.put(None)
             # Optionally: Handle background_task termination if necessary
-
     process_queue = Queue()
     script_path = os.path.join(user_dir, filename)
 
@@ -50,6 +48,8 @@ def run_script_and_capture_output(filename, password, user_dir):
         while True:
             try:
                 message = process_queue.get(timeout=1)
+                if message is None:
+                    break
                 if message["type"] == "log":
                     socketio.emit("log_message", {"data": message["data"]})
             except Exception as e:

@@ -142,8 +142,7 @@ def stop_script(filename):
         process, queue, background_task = script_processes[filename]
         if process.is_alive():
             process.kill()  # kill the existing process
-            process.join()  # Wait for the process to terminate
-            queue.close()  # Close the queue
+            queue.put(None)
         del script_processes[filename]
 
     return redirect(url_for("list_files"))
