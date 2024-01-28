@@ -1,3 +1,4 @@
+from datetime import timedelta
 import eventlet
 
 eventlet.monkey_patch()
@@ -7,6 +8,7 @@ from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=365)
 socketio = SocketIO(app, async_mode="eventlet")
 
 
