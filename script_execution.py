@@ -70,8 +70,9 @@ class WriteToQueue:
         self.log_file = open(log_filepath, "a+")
 
     def write_to_log_file(self, log: str):
-        encrypted_log = encryption_helper.encrypt_string(log, self.password)
-        self.log_file.write(encrypted_log + "\n")
+        # encrypted_log = encryption_helper.encrypt_string(log, self.password)
+        # self.log_file.write(encrypted_log + "\n")
+        self.log_file.write(log)
         self.log_file.flush()
 
     def print_to_main_process(self, log: str):
